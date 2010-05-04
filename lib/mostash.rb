@@ -3,6 +3,7 @@ require 'ostruct'
 require File.join(File.dirname(__FILE__), "mostash", "mostash")
 
 def dbg( msg )
-  file_name = __FILE__.split( '/' ).last
-  puts "#{file_name} ##{__LINE__}: #{msg}"
+  file, line, method_raw = caller[0].split('/').last.split(':')
+  method = method_raw.match(/^in `(.+)'/)[1] 
+  puts "#{method} (#{file}##{line}): #{msg}"
 end
