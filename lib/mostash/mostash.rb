@@ -21,6 +21,35 @@ class MoStash < OpenStruct
     self.send "#{key.to_s}"
   end
 
+  def merge(new_hash)
+    new_mo = @table.merge( new_hash ) do |key, oldval, newval|
+      if oldval.class == MoStash
+        oldval.merge newval
+      else
+        newval
+      end
+    end
+    MoStash.new( new_mo )
+  end
+
+  #TODO: HACK!!!!!
+  def merge!(new_hash)
+    @table = self.merge( new_hash ).instance_variable_get( '@table' )
+    self
+  end
+
+  def to_hash
+    hash = {}
+    @table.each_pair do |key, value|
+      hash[key] = if value.class == MoStash
+                    value.to_hash
+                  else
+                    value
+                  end
+    end
+    hash
+  end
+
   private
 
   def __init__(hash)
