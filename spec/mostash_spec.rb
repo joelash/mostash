@@ -54,7 +54,7 @@ describe MoStash do
   end
 
   it "should create method when new method called" do
-    mo = MoStash.new
+    mo = Mostash.new
     mo.foo = "bar"
 
     mo.methods.should include(:foo)

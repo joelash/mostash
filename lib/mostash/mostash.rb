@@ -1,4 +1,4 @@
-class MoStash < OpenStruct
+class Mostash < OpenStruct
   def initialize(init={})
     super({})
     __init__ init
@@ -23,13 +23,13 @@ class MoStash < OpenStruct
 
   def merge(new_hash)
     new_mo = @table.merge( new_hash ) do |key, oldval, newval|
-      if oldval.class == MoStash
+      if oldval.class == Mostash
         oldval.merge newval
       else
         newval
       end
     end
-    MoStash.new( new_mo )
+    Mostash.new( new_mo )
   end
 
   #TODO: HACK!!!!!
@@ -41,7 +41,7 @@ class MoStash < OpenStruct
   def to_hash
     hash = {}
     @table.each_pair do |key, value|
-      hash[key] = if value.class == MoStash
+      hash[key] = if value.class == Mostash
                     value.to_hash
                   else
                     value
@@ -60,7 +60,7 @@ class MoStash < OpenStruct
 
   def __adjusted_value__(value)
     case value
-    when Hash then MoStash.new( value )
+    when Hash then Mostash.new( value )
     when Array then value.map{ |v| __adjusted_value__( v ) }
     else value
     end

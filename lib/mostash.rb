@@ -1,6 +1,7 @@
 require 'ostruct'
 
 require File.join(File.dirname(__FILE__), "mostash", "mostash")
+MoStash = Mostash
 
 def dbg( msg )
   file, line, method_raw = caller[0].split('/').last.split(':')
