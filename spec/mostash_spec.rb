@@ -57,7 +57,7 @@ describe MoStash do
     mo = MoStash.new
     mo.foo = "bar"
 
-    mo.methods.should include("foo")
+    mo.methods.should include(:foo)
   end
 
 end
