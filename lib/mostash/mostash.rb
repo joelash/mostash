@@ -4,9 +4,11 @@ class Mostash < OpenStruct
     __init__ init
   end
 
-  def method_missing(method_name, *args)
-    #dbg "#{method_name} was sent #{args.inspect}"
-    if __is_setter__( method_name )
+  def method_missing(method_name, *args, &block)
+    #dbg "#{method_name} was sent #{args.inspect}, and block #{block.inspect}"
+    if @table.respond_to? method_name
+      @table.send method_name, *args, &block
+    elsif __is_setter__( method_name )
       super method_name, __adjusted_value__( args.first )
     else
       super
