@@ -16,6 +16,21 @@ describe 'MoStash as Hash' do
     end
   end
 
+  context 'initialization' do
+    it "should support initialzation from hash with default value" do
+      mo = Mostash.new(Hash.new(123))
+
+      mo.doesnt_exist.should == 123
+    end
+
+    it "should support initialization from hash with block for deafult" do
+      h = Hash.new { |hash, key| hash[key] = "Go Fish: #{key}" }
+      mo = Mostash.new h
+
+      mo.doesnt_exist.should == "Go Fish: doesnt_exist"
+    end
+  end
+
   context 'hash functions' do
 
     it "should respond to empty?" do

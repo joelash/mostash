@@ -1,6 +1,7 @@
 class Mostash < OpenStruct
   def initialize(init={})
     super({})
+    @initial_hash = init
     __init__ init
   end
 
@@ -11,7 +12,7 @@ class Mostash < OpenStruct
     elsif __is_setter__( method_name )
       super method_name, __adjusted_value__( args.first )
     else
-      super
+      super || @initial_hash.send(:[], method_name, *args, &block)
     end
   end
 
