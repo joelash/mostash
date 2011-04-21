@@ -5,6 +5,18 @@ class Mostash < OpenStruct
     __init__ init
   end
 
+  def new_ostruct_member(name)
+    name = name.to_sym
+    unless self.respond_to?(name)
+      super
+      eigenclass.class_eval do
+        remove_method("#{name}") if self.respond_to?(name)
+        define_method("#{name}=") { |x| modifiable[name] = __adjusted_value__ x }
+      end
+    end
+    name
+  end
+
   def method_missing(method_name, *args, &block)
     #dbg "#{method_name} was sent #{args.inspect}, and block #{block.inspect}"
     if @table.respond_to? method_name
@@ -17,7 +29,7 @@ class Mostash < OpenStruct
   end
 
   def []=(key, value)
-    self.send "#{key.to_s}=", value
+    self.send "#{key.to_s}=", __adjusted_value__(value)
   end
 
   def [](key)
@@ -71,5 +83,11 @@ class Mostash < OpenStruct
 
   def __is_setter__(method_name)
     method_name.to_s =~ /=$/
+  end
+ 
+  def eigenclass
+    class << self
+      self
+    end
   end
 end

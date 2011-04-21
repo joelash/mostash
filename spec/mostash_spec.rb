@@ -46,6 +46,13 @@ describe MoStash do
     mo.foo.bar.should == 'baz'
   end
 
+  it "should automatically make a hash a Mostash if key already exist" do
+    mo = MoStash.new( {:foo => {:bar => 'baz' } } )
+
+    mo.foo = { :bar => 'new_baz' }
+    mo.foo.bar.should == 'new_baz'
+  end
+
   it "should correctly handle an array of hashes" do
     mo = MoStash.new
     mo.foo = [{:hey => 'you'}, {:oh => 'hai'}]
