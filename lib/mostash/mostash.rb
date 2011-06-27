@@ -11,7 +11,7 @@ class Mostash < OpenStruct
       super
       eigenclass.class_eval do
         remove_method("#{name}") if self.respond_to?(name)
-        define_method("#{name}=") { |x| modifiable[name] = __adjusted_value__ x }
+        define_method("#{name}=") { |x| @table[name] = __adjusted_value__ x }
       end
     end
     name
