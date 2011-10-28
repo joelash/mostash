@@ -1,25 +1,49 @@
+# encoding: utf-8
+
 require 'rubygems'
-require 'spec/rake/spectask'
-
+require 'bundler'
 begin
-  require 'jeweler'
-  Jeweler::Tasks.new do |gemspec|
-    gemspec.name = "mostash"
-    gemspec.summary = "A combo of OpenStruct and a ruby hash"
-    gemspec.description = "You can treat an object as either a hash or as an OpenStruct. In additon to this you can create them nested, unlike OpenStruct"
-    gemspec.email = "asher.friedman@gmail.com"
-    #gemspec.homepage = "http://github.com/technicalpickles/the-perfect-gem"
-    gemspec.authors = ["Joel Friedman"]
+  Bundler.setup(:default, :development)
+rescue Bundler::BundlerError => e
+  $stderr.puts e.message
+  $stderr.puts "Run `bundle install` to install missing gems"
+  exit e.status_code
+end
+require 'rake'
 
-    gemspec.add_development_dependency "rspec"
-  end
-rescue LoadError
-  puts "Jeweler not available. Install it with: gem install jeweler"
+require 'jeweler'
+Jeweler::Tasks.new do |gem|
+  # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
+  gem.name = "mostash"
+  gem.homepage = "http://github.com/joelash/mostash"
+  gem.license = "MIT"
+  gem.summary = "A combo of OpenStruct and a ruby hash"
+  gem.description = "You can treat an object as either a hash or as an OpenStruct. In additon to this you can create them nested, unlike OpenStruct"
+  gem.email = "asher.friedman@gmail.com"
+  gem.authors = ["Joel Friedman"]
+  # dependencies defined in Gemfile
+end
+Jeweler::RubygemsDotOrgTasks.new
+
+require 'rspec/core'
+require 'rspec/core/rake_task'
+RSpec::Core::RakeTask.new(:spec) do |spec|
+  spec.pattern = FileList['spec/**/*_spec.rb']
 end
 
-desc "run all specs"
-Spec::Rake::SpecTask.new( "spec" ) do |t|
-  t.spec_files = FileList["spec/**/*_spec.rb"]
+RSpec::Core::RakeTask.new(:rcov) do |spec|
+  spec.pattern = 'spec/**/*_spec.rb'
+  spec.rcov = true
 end
 
 task :default => :spec
+
+require 'rdoc/task'
+Rake::RDocTask.new do |rdoc|
+  version = File.exist?('VERSION') ? File.read('VERSION') : ""
+
+  rdoc.rdoc_dir = 'rdoc'
+  rdoc.title = "mostash #{version}"
+  rdoc.rdoc_files.include('README*')
+  rdoc.rdoc_files.include('lib/**/*.rb')
+end
