@@ -1,75 +1,37 @@
-class Mostash < OpenStruct
+class Mostash < Hash
+  alias_method :orig_init, :initialize
   def initialize(init={})
-    super({})
-    @initial_hash = init
-    __init__ init
-  end
-
-  def new_ostruct_member(name)
-    name = name.to_sym
-    unless self.respond_to?(name)
+    if init.is_a? Hash
+      __init__ init
+    else
       super
-      eigenclass.class_eval do
-        remove_method("#{name}") if self.respond_to?(name)
-        define_method("#{name}=") { |x| @table[name] = __adjusted_value__ x }
-      end
     end
-    name
   end
 
   def method_missing(method_name, *args, &block)
     #dbg "#{method_name} was sent #{args.inspect}, and block #{block.inspect}"
-    if @table.respond_to? method_name
-      @table.send method_name, *args, &block
-    elsif __is_setter__( method_name )
-      super method_name, __adjusted_value__( args.first )
+    if __is_setter__( method_name )
+      method_name = method_name.to_s.gsub! '=', ''
+      self[method_name] = args.first
     else
-      super || @initial_hash.send(:[], method_name, *args, &block)
+      self[method_name]
     end
   end
 
+  alias_method :__set__, :[]=
   def []=(key, value)
-    self.send "#{key.to_s}=", __adjusted_value__(value)
+    __set__ key.to_sym, __adjusted_value__(value)
   end
 
+  alias_method :__get__, :[]
   def [](key)
-    self.send "#{key.to_s}"
-  end
-
-  def merge(new_hash)
-    new_mo = @table.merge( new_hash ) do |key, oldval, newval|
-      if oldval.class == Mostash
-        oldval.merge newval
-      else
-        newval
-      end
-    end
-    Mostash.new( new_mo )
-  end
-
-  #TODO: HACK!!!!!
-  def merge!(new_hash)
-    @table = self.merge( new_hash ).instance_variable_get( '@table' )
-    self
-  end
-
-  def to_hash
-    hash = {}
-    @table.each_pair do |key, value|
-      hash[key] = if value.class == Mostash
-                    value.to_hash
-                  else
-                    value
-                  end
-    end
-    hash
+    __get__ key.to_sym
   end
 
   private
-
   def __init__(hash)
     hash.each_pair do |key, value|
-      self.send "#{key.to_s}=", __adjusted_value__( value )
+      self[key.to_sym] =  __adjusted_value__( value )
     end
   end
 
@@ -78,7 +40,7 @@ class Mostash < OpenStruct
     when Hash then Mostash.new( value )
     when Array then value.map{ |v| __adjusted_value__( v ) }
     else value
-    end
+    end#.tap { |ret| dbg "calc adj value for #{value.inspect} = #{ret}" }
   end
 
   def __is_setter__(method_name)

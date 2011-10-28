@@ -19,6 +19,7 @@ describe 'MoStash as Hash' do
   context 'initialization' do
     it "should support initialzation from hash with default value" do
       mo = Mostash.new(Hash.new(123))
+      #TODO: should this be supported or should it just be Mostash.new(123)
 
       mo.doesnt_exist.should == 123
     end
