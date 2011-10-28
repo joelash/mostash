@@ -64,7 +64,9 @@ describe MoStash do
     mo = Mostash.new
     mo.foo = "bar"
 
-    mo.methods.should include(:foo)
+    mo.methods.should satisfy { |methods|
+      methods.include?(:foo) || methods.include?('foo')
+    }
   end
 
 end
