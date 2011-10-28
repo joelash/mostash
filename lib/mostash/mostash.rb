@@ -1,11 +1,14 @@
 class Mostash < Hash
   alias_method :orig_init, :initialize
-  def initialize(init={})
+  def initialize(init={}, &def_proc)
     if init.is_a? Hash
       __init__ init
+      self.send(:default=, init.default) if init.default
+      self.send(:default_proc=, init.default_proc) if init.default_proc
     else
       super
     end
+    self.send(:default_proc=, def_proc) if block_given?
   end
 
   def method_missing(method_name, *args, &block)

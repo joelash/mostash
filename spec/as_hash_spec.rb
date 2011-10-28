@@ -17,9 +17,20 @@ describe 'MoStash as Hash' do
   end
 
   context 'initialization' do
+    it "should support initializtion from default value" do
+      mo = Mostash.new 123
+
+      mo.doesnt_exist.should == 123
+    end
+
+    it "should support initialzation from default proc" do
+      mo = Mostash.new { |hash, key| hash[key] = "Go Fish: #{key}" }
+
+      mo.doesnt_exist.should == "Go Fish: doesnt_exist"
+    end
+
     it "should support initialzation from hash with default value" do
       mo = Mostash.new(Hash.new(123))
-      #TODO: should this be supported or should it just be Mostash.new(123)
 
       mo.doesnt_exist.should == 123
     end

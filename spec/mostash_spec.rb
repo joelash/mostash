@@ -1,11 +1,5 @@
 require 'spec_helper'
 
-RSpec::Matchers.define :include_method do |name|
-  match do |obj|
-    obj.methods.include?(name.to_sym) || obj.methods.include?(name.to_s)
-  end
-end
-
 describe MoStash do
 
   it "should act like basic OpenStruct" do
@@ -64,13 +58,6 @@ describe MoStash do
     mo.foo = [{:hey => 'you'}, {:oh => 'hai'}]
 
     mo.foo[1].oh.should == 'hai'
-  end
-
-  it "should create method when new method called" do
-    mo = Mostash.new
-    mo.foo = "bar"
-
-    mo.should include_method(:foo)
   end
 
 end
