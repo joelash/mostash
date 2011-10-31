@@ -96,6 +96,15 @@ describe 'MoStash as Hash' do
     end
 
     context 'merge' do
+      it "should not change without bang" do
+        mo = MoStash.new :foo => 'bar', :hello => 'world'
+
+        new_mo = mo.merge( :hello => 'tester' )
+
+        new_mo.hello.should == 'tester'
+        mo.hello.should == 'world'
+      end
+
       it "should support merge when single level" do
         mo = MoStash.new :foo => 'bar', :hello => 'world'
 

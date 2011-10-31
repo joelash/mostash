@@ -11,6 +11,11 @@ class Mostash < Hash
     self.send(:default_proc=, def_proc) if block_given?
   end
 
+  def clone
+    Mostash.new(self)
+  end
+  alias_method :dup, :clone
+
   def method_missing(method_name, *args, &block)
     #dbg "#{method_name} was sent #{args.inspect}, and block #{block.inspect}"
     if __is_setter__( method_name )
@@ -31,10 +36,25 @@ class Mostash < Hash
     __get__ key.to_sym
   end
 
+  def merge!(from={})
+    from.each_pair do |key, value|
+      new_value = case value
+                  when Hash then Mostash.new(self[key] || {}).merge(value)
+                  else value
+                  end
+      self[key] = new_value
+    end
+    self
+  end
+
+  def merge(from={})
+    self.clone.merge! from
+  end
+
   private
   def __init__(hash)
     hash.each_pair do |key, value|
-      self[key.to_sym] =  __adjusted_value__( value )
+      self[key] =  __adjusted_value__( value )
     end
   end
 
