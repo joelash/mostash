@@ -1,14 +1,18 @@
 class Mostash < Hash
   alias_method :orig_init, :initialize
+
+  attr_accessor :default_proc
+
   def initialize(init={}, &def_proc)
+    @default_proc = nil
     if init.is_a? Hash
       __init__ init
       self.send(:default=, init.default) if init.default
-      self.send(:default_proc=, init.default_proc) if init.default_proc
+      @default_proc = init.default_proc if init.default_proc
     else
       super
     end
-    self.send(:default_proc=, def_proc) if block_given?
+    @default_proc = def_proc if block_given?
   end
 
   def clone
@@ -18,6 +22,7 @@ class Mostash < Hash
 
   def method_missing(method_name, *args, &block)
     #dbg "#{method_name} was sent #{args.inspect}, and block #{block.inspect}"
+    return default_proc.call(self, method_name) if default_proc
     if __is_setter__( method_name )
       method_name = method_name.to_s.gsub! '=', ''
       self[method_name] = args.first
